@@ -534,13 +534,25 @@ if find_match:
 
                         with col3:
                             st.markdown(f"**Pricing**")
-                            if pd.notna(row.get('Sell Price (inc gst)')):
-                                st.markdown(f"Sell: **${row['Sell Price (inc gst)']:.2f}** inc GST")
-                            # Only show buy price if admin mode is enabled
-                            if check_admin_mode() and pd.notna(row.get('Buy Price (inc gst)')):
-                                st.markdown(f"🔐 Buy: ${row['Buy Price (inc gst)']:.2f} inc GST")
-                            if pd.isna(row.get('Sell Price (inc gst)')):
+                            sell_price = row.get('Sell Price (inc gst)')
+                            buy_price = row.get('Buy Price (inc gst)')
+                            has_sell = pd.notna(sell_price) and sell_price != ''
+                            has_buy = pd.notna(buy_price) and buy_price != ''
+
+                            if has_sell:
+                                try:
+                                    st.markdown(f"Sell: **${float(sell_price):.2f}** inc GST")
+                                except (ValueError, TypeError):
+                                    st.markdown("*Price on application*")
+                            else:
                                 st.markdown("*Price on application*")
+
+                            # Only show buy price if admin mode is enabled
+                            if check_admin_mode() and has_buy:
+                                try:
+                                    st.markdown(f"🔐 Buy: ${float(buy_price):.2f} inc GST")
+                                except (ValueError, TypeError):
+                                    pass
 
 # ====================================
 # 10. FOOTER
