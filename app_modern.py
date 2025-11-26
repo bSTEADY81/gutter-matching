@@ -64,6 +64,21 @@ def check_password():
     else:
         return True
 
+def check_admin_mode():
+    """Check if admin mode is enabled (for viewing buy prices)."""
+    return st.session_state.get("admin_mode", False)
+
+def toggle_admin_mode():
+    """Toggle admin mode on/off with password verification."""
+    if "admin_password_input" in st.session_state:
+        admin_pw = st.secrets.get("passwords", {}).get("admin", None)
+        if admin_pw and st.session_state["admin_password_input"] == admin_pw:
+            st.session_state["admin_mode"] = True
+            if "admin_password_input" in st.session_state:
+                del st.session_state["admin_password_input"]
+        else:
+            st.session_state["admin_mode"] = False
+
 # Check authentication before showing any content
 if not check_password():
     st.stop()
@@ -244,6 +259,26 @@ with st.sidebar:
     st.metric("Database Size", f"{len(df)} profiles")
     st.metric("Suppliers", "25+")
     st.metric("With Pricing", f"{df['Sell Price (inc gst)'].notna().sum()} items")
+
+    # Admin Mode Section (for viewing wholesale/buy prices)
+    st.markdown("---")
+    st.markdown("#### 🔐 Admin Access")
+
+    if check_admin_mode():
+        st.success("Admin mode active")
+        if st.button("🔓 Exit Admin Mode", use_container_width=True):
+            st.session_state["admin_mode"] = False
+            st.rerun()
+    else:
+        with st.expander("Unlock Buy Prices"):
+            st.text_input(
+                "Admin Password",
+                type="password",
+                key="admin_password_input",
+                placeholder="Enter admin password",
+                on_change=toggle_admin_mode
+            )
+            st.caption("Contact management for access")
 
 # ====================================
 # 6. MAIN INPUT SECTION
@@ -501,9 +536,10 @@ if find_match:
                             st.markdown(f"**Pricing**")
                             if pd.notna(row.get('Sell Price (inc gst)')):
                                 st.markdown(f"Sell: **${row['Sell Price (inc gst)']:.2f}** inc GST")
-                            if pd.notna(row.get('Buy Price (inc gst)')):
-                                st.markdown(f"Buy: ${row['Buy Price (inc gst)']:.2f} inc GST")
-                            if pd.isna(row.get('Sell Price (inc gst)')) and pd.isna(row.get('Buy Price (inc gst)')):
+                            # Only show buy price if admin mode is enabled
+                            if check_admin_mode() and pd.notna(row.get('Buy Price (inc gst)')):
+                                st.markdown(f"🔐 Buy: ${row['Buy Price (inc gst)']:.2f} inc GST")
+                            if pd.isna(row.get('Sell Price (inc gst)')):
                                 st.markdown("*Price on application*")
 
 # ====================================
