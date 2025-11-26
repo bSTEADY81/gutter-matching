@@ -16,12 +16,22 @@ st.set_page_config(
 # ====================================
 # 1.5 LOGIN AUTHENTICATION
 # ====================================
+def get_secret(section, key):
+    """Get secret with fallback for flat structure."""
+    try:
+        # Try section-based format first: [passwords] kcs_team = "..."
+        return st.secrets[section][key]
+    except (KeyError, TypeError):
+        # Fall back to flat format: kcs_team = "..."
+        return st.secrets.get(key, None)
+
 def check_password():
     """Returns True if the user has entered the correct password."""
 
     def password_entered():
         """Checks whether a password entered by the user is correct."""
-        if st.session_state["password"] == st.secrets["passwords"]["kcs_team"]:
+        correct_pw = get_secret("passwords", "kcs_team")
+        if correct_pw and st.session_state["password"] == correct_pw:
             st.session_state["password_correct"] = True
             del st.session_state["password"]  # Don't store password
         else:
@@ -71,7 +81,7 @@ def check_admin_mode():
 def toggle_admin_mode():
     """Toggle admin mode on/off with password verification."""
     if "admin_password_input" in st.session_state:
-        admin_pw = st.secrets.get("passwords", {}).get("admin", None)
+        admin_pw = get_secret("passwords", "admin")
         if admin_pw and st.session_state["admin_password_input"] == admin_pw:
             st.session_state["admin_mode"] = True
             if "admin_password_input" in st.session_state:
