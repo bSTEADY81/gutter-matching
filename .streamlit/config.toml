@@ -1,0 +1,38 @@
+# Streamlit Configuration
+# Gutter Gauge Professional Theme
+
+[theme]
+# Primary brand color - professional blue
+primaryColor = "#0066CC"
+
+# Background colors
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F8F9FA"
+
+# Text color - dark gray for readability
+textColor = "#1A202C"
+
+# Font family
+font = "sans serif"
+
+[server]
+# Keep existing settings
+headless = true
+# Run on save disabled for production
+runOnSave = false
+# Max upload size for images
+maxUploadSize = 50
+
+[browser]
+# Keep existing setting
+gatherUsageStats = false
+
+[client]
+# Show toolbar minimally
+toolbarMode = "minimal"
+# Don't show error details in production
+showErrorDetails = false
+
+[logger]
+# Log level
+level = "info"
