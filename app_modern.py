@@ -10,7 +10,7 @@ st.set_page_config(
     page_title="Gutter Gauge - Professional Gutter Matching",
     page_icon="📏",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # ====================================
@@ -30,10 +30,20 @@ def check_password():
 
     def password_entered():
         """Checks whether a password entered by the user is correct."""
-        correct_pw = get_secret("passwords", "kcs_team")
-        if correct_pw and st.session_state["password"] == correct_pw:
+        entered_pw = st.session_state["password"]
+        team_pw = get_secret("passwords", "kcs_team")
+        admin_pw = get_secret("passwords", "admin")
+
+        # Check if admin password - grants full access including buy prices
+        if admin_pw and entered_pw == admin_pw:
             st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store password
+            st.session_state["admin_mode"] = True  # Auto-enable admin mode
+            del st.session_state["password"]
+        # Check if team password - grants access but no buy prices
+        elif team_pw and entered_pw == team_pw:
+            st.session_state["password_correct"] = True
+            st.session_state["admin_mode"] = False
+            del st.session_state["password"]
         else:
             st.session_state["password_correct"] = False
 
@@ -270,25 +280,11 @@ with st.sidebar:
     st.metric("Suppliers", "25+")
     st.metric("With Pricing", f"{df['Sell Price (inc gst)'].notna().sum()} items")
 
-    # Admin Mode Section (for viewing wholesale/buy prices)
-    st.markdown("---")
-    st.markdown("#### 🔐 Admin Access")
-
+    # Show admin status if logged in as admin
     if check_admin_mode():
-        st.success("Admin mode active")
-        if st.button("🔓 Exit Admin Mode", use_container_width=True):
-            st.session_state["admin_mode"] = False
-            st.rerun()
-    else:
-        with st.expander("Unlock Buy Prices"):
-            st.text_input(
-                "Admin Password",
-                type="password",
-                key="admin_password_input",
-                placeholder="Enter admin password",
-                on_change=toggle_admin_mode
-            )
-            st.caption("Contact management for access")
+        st.markdown("---")
+        st.success("🔐 Admin Mode Active")
+        st.caption("Buy prices visible")
 
 # ====================================
 # 6. MAIN INPUT SECTION
