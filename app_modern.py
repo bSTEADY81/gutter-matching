@@ -316,10 +316,11 @@ with col1:
     u_base = st.number_input(
         "Base measurement",
         min_value=0,
-        value=0,
         step=1,
         help="Width of the gutter base in mm",
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        key="u_base",
+        format="%d"
     )
 
 with col2:
@@ -327,10 +328,11 @@ with col2:
     u_face = st.number_input(
         "Face measurement",
         min_value=0,
-        value=0,
         step=1,
         help="Front height of the gutter in mm",
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        key="u_face",
+        format="%d"
     )
 
 with col3:
@@ -338,10 +340,11 @@ with col3:
     u_back = st.number_input(
         "Back measurement",
         min_value=0,
-        value=0,
         step=1,
         help="Rear height of the gutter in mm",
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        key="u_back",
+        format="%d"
     )
 
 st.markdown('</div>', unsafe_allow_html=True)
