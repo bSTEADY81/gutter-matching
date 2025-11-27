@@ -50,34 +50,49 @@ def check_password():
     # First run or password not yet correct
     if "password_correct" not in st.session_state:
         st.markdown("""
-        <div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 60vh;">
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        padding: 40px; border-radius: 16px; text-align: center;
-                        box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-width: 400px; width: 100%;">
-                <h1 style="color: white; margin-bottom: 8px;">Gutter Gauge</h1>
-                <p style="color: rgba(255,255,255,0.8); margin-bottom: 24px;">KCs Building Products</p>
+                        padding: 40px 60px; border-radius: 16px; text-align: center;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.2); margin-bottom: 24px;">
+                <h1 style="color: white; margin-bottom: 8px; font-size: 42px;">📏 Gutter Gauge</h1>
+                <p style="color: rgba(255,255,255,0.8); margin: 0;">KCs Building Products</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
-        st.text_input(
-            "Enter password to access",
-            type="password",
-            on_change=password_entered,
-            key="password",
-            placeholder="Password"
-        )
+        # Center the password input
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            st.text_input(
+                "Enter password to access",
+                type="password",
+                on_change=password_entered,
+                key="password",
+                placeholder="Password"
+            )
         return False
 
     # Password incorrect
     elif not st.session_state["password_correct"]:
-        st.text_input(
-            "Enter password to access",
-            type="password",
-            on_change=password_entered,
-            key="password",
-            placeholder="Password"
-        )
-        st.error("Incorrect password. Please try again.")
+        st.markdown("""
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 60vh;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 40px 60px; border-radius: 16px; text-align: center;
+                        box-shadow: 0 10px 40px rgba(0,0,0,0.2); margin-bottom: 24px;">
+                <h1 style="color: white; margin-bottom: 8px; font-size: 42px;">📏 Gutter Gauge</h1>
+                <p style="color: rgba(255,255,255,0.8); margin: 0;">KCs Building Products</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            st.text_input(
+                "Enter password to access",
+                type="password",
+                on_change=password_entered,
+                key="password",
+                placeholder="Password"
+            )
+            st.error("Incorrect password. Please try again.")
         return False
 
     # Password correct
